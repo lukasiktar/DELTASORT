@@ -22,7 +22,7 @@ def connect_to_cameras(num_cameras):
         model = cam.GetDeviceInfo().GetModelName()
         serial = cam.GetDeviceInfo().GetSerialNumber()
 
-        print(f"--- Camera {i+1} ---")
+        print(f"Camera {i+1} ")
         print(f"Model: {model}")
         print(f"Serial: {serial}")
 
@@ -65,7 +65,7 @@ def main():
         for i in range(num_cameras):
             cv2.namedWindow(f'Basler Camera {i + 1}', cv2.WINDOW_NORMAL)
 
-        print("Streaming... press 'q' to quit.\n")
+        print("Streaming, press 'q' to quit.\n")
 
         while True:
             frames = []

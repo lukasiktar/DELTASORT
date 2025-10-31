@@ -13,3 +13,5 @@
 06_record_one_min_video.py - Recording the synchronized video in specified length (60s) each camera independently.
 
 07_joint_recording.py - Streaming and recording synchronized video stream from cameras.
+
+08_record_one_min_images.py - Record one the synchronized image in specified length for each camera idependently.

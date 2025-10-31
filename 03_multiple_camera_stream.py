@@ -6,7 +6,7 @@ def connect_to_cameras(num_cameras):
     """Connect to multiple cameras."""
     cameras = []
     
-    # Enumerate all available cameras
+    # All available cameras
     devices = pylon.TlFactory.GetInstance().EnumerateDevices()
 
     # Check if the number of cameras exceeds available devices
@@ -17,24 +17,23 @@ def connect_to_cameras(num_cameras):
     for i in range(num_cameras):
         camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateDevice(devices[i]))
         camera.Open()
+        
         camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly)
         cameras.append(camera)
 
     return cameras
 
 def main():
-    # Set the number of cameras you want to connect to
-    num_cameras = 2  # Example for 2 cameras
+    # The number of cameras you want to connect 
+    num_cameras = 2 
 
     try:
-        # Connect to the cameras
         cameras = connect_to_cameras(num_cameras)
 
         # Create OpenCV windows for each camera
         for i in range(num_cameras):
             cv2.namedWindow(f'Basler Camera {i + 1}', cv2.WINDOW_NORMAL)
 
-        # Start grabbing images from each camera
         while True:
             frames = []
 
@@ -51,7 +50,6 @@ def main():
             for i, frame in enumerate(frames):
                 cv2.imshow(f'Basler Camera {i + 1}', frame)
 
-            # Break if 'q' is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -59,12 +57,10 @@ def main():
         print(f"An error occurred: {e}")
 
     finally:
-        # Stop grabbing and close cameras
         for camera in cameras:
             camera.StopGrabbing()
             camera.Close()
 
-        # Close all OpenCV windows
         cv2.destroyAllWindows()
 
 if __name__ == '__main__':

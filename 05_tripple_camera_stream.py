@@ -24,17 +24,16 @@ def connect_to_realsense():
     pipeline = rs.pipeline()
     config = rs.config()
     config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    #config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     pipeline.start(config)
     align_to = rs.stream.color
     align = rs.align(align_to)
     return pipeline, align
 
 def main():
-    num_basler_cameras = 2  # Example for 2 Basler cameras
+    num_basler_cameras = 2  # 2 Basler cameras
 
     try:
-        # Connect to cameras
         basler_cameras = connect_to_basler_cameras(num_basler_cameras)
         rs_pipeline, rs_align = connect_to_realsense()
 
@@ -60,14 +59,11 @@ def main():
             color_frame = aligned_frames.get_color_frame()
             rs_image = np.asanyarray(color_frame.get_data())
 
-            # Display Basler frames
             for i, frame in enumerate(basler_frames):
                 cv2.imshow(f'Basler Camera {i + 1}', frame)
 
-            # Display RealSense frame
             cv2.imshow("RealSense", rs_image)
 
-            # Exit on 'q'
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -75,13 +71,10 @@ def main():
         print(f"An error occurred: {e}")
 
     finally:
-        # Stop Basler cameras
         for camera in basler_cameras:
             camera.StopGrabbing()
             camera.Close()
-        # Stop RealSense pipeline
         rs_pipeline.stop()
-        # Close OpenCV windows
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":

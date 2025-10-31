@@ -31,14 +31,10 @@ try:
         # Convert images to numpy arrays
         color_image = np.asanyarray(color_frame.get_data())
         
-
-        # Show the images
         cv2.imshow("RealSense", color_image)
 
-        # Press 'q' to exit
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 finally:
-    # Stop the pipeline
     pipeline.stop()
     cv2.destroyAllWindows()
