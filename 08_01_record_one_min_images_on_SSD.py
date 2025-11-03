@@ -84,7 +84,7 @@ def main():
                     if len(img.shape) == 2:
                         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
                     # Optional resize to speed up writing
-                    img = cv2.resize(img, (640, 480))
+                    #img = cv2.resize(img, (640, 480))
                     basler_images.append(img)
                     print(f"Basler camera {i+1} grabbed frame {capture_count}, shape: {img.shape}")
                 else:
