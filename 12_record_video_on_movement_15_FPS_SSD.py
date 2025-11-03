@@ -11,13 +11,22 @@ from src.camera_setup import CameraSetup
 SSD_PATH = "/media/deltasort1/ADATA SD620/camera_data_videos"
 os.makedirs(SSD_PATH, exist_ok=True)
 
-# >>> Added for timeout <<<
-TIMEOUT_SECONDS = 3600  # 1 hour timeout
+# Timeout for program exit
+TIMEOUT_SECONDS = 3600  # 1 hour
 
 class MotionCameraStream(CameraSetup):
 
     def __init__(self):
         super().__init__()
+        self.fps = 15  # Desired recording FPS
+        self.frame_interval = 1.0 / self.fps
+        self.recording = False
+        self.motion = False
+        self.stream_active = False
+        self.running = True
+        self.timestamp = None
+
+    # --------------------------- Camera Frames ---------------------------
 
     def get_realsense_frame(self):
         try:
@@ -34,14 +43,26 @@ class MotionCameraStream(CameraSetup):
 
     def start_recording(self):
         self.timestamp = time.strftime("%Y%m%d_%H%M%S")
-        self.out_basler_0 = cv2.VideoWriter(os.path.join(SSD_PATH, f'basler0_{self.timestamp}.avi'),
-                                            cv2.VideoWriter_fourcc(*'XVID'), self.fps, (self.width, self.height))
-        self.out_basler_1 = cv2.VideoWriter(os.path.join(SSD_PATH, f'basler1_{self.timestamp}.avi'),
-                                            cv2.VideoWriter_fourcc(*'XVID'), self.fps, (self.width, self.height))
-        self.out_rs = cv2.VideoWriter(os.path.join(SSD_PATH, f'realsense_{self.timestamp}.avi'),
-                                      cv2.VideoWriter_fourcc(*'XVID'), self.fps, (self.width, self.height))
+        self.out_basler_0 = cv2.VideoWriter(
+            os.path.join(SSD_PATH, f'basler0_{self.timestamp}.avi'),
+            cv2.VideoWriter_fourcc(*'XVID'),
+            self.fps,
+            (self.width, self.height)
+        )
+        self.out_basler_1 = cv2.VideoWriter(
+            os.path.join(SSD_PATH, f'basler1_{self.timestamp}.avi'),
+            cv2.VideoWriter_fourcc(*'XVID'),
+            self.fps,
+            (self.width, self.height)
+        )
+        self.out_rs = cv2.VideoWriter(
+            os.path.join(SSD_PATH, f'realsense_{self.timestamp}.avi'),
+            cv2.VideoWriter_fourcc(*'XVID'),
+            self.fps,
+            (self.width, self.height)
+        )
         self.recording = True
-        print(f" Recording started: {self.timestamp}")
+        print(f"📹 Recording started: {self.timestamp}")
 
     def stop_recording(self):
         if self.recording:
@@ -81,15 +102,13 @@ class MotionCameraStream(CameraSetup):
         frame2 = self.get_realsense_frame()
         last_motion_time = 0
         first_motion_time = 0
-
-        # >>> Added for timeout <<<
         start_time = time.time()
+        last_frame_time = 0
 
         try:
             while self.running:
-                # >>> Timeout check <<<
-                elapsed_time = time.time() - start_time
-                if elapsed_time >= TIMEOUT_SECONDS:
+                # Timeout check
+                if time.time() - start_time >= TIMEOUT_SECONDS:
                     print(f"Timeout reached ({TIMEOUT_SECONDS} seconds). Exiting...")
                     break
 
@@ -105,7 +124,7 @@ class MotionCameraStream(CameraSetup):
                     if not self.motion:
                         first_motion_time = current_time
                         self.motion = True
-                        print("Motion detected!")
+                        print(" Motion detected!")
 
                 # Start recording if motion sustained
                 if self.motion and not self.stream_active and (current_time - first_motion_time >= MIN_MOTION_TIME):
@@ -120,10 +139,13 @@ class MotionCameraStream(CameraSetup):
                     self.stream_active = False
                     self.motion = False
 
-                # Record and display
-                if self.stream_active:
+                # Limit recording to desired FPS
+                if self.stream_active and (current_time - last_frame_time >= self.frame_interval):
+                    last_frame_time = current_time
+
+                    # Capture Basler frames
                     basler_frames = []
-                    for i, cam in enumerate(self.basler_cameras):
+                    for cam in self.basler_cameras:
                         grab_result = cam.RetrieveResult(1000, pylon.TimeoutHandling_Return)
                         if grab_result and grab_result.GrabSucceeded():
                             img = grab_result.GetArray()
@@ -134,6 +156,7 @@ class MotionCameraStream(CameraSetup):
                         if grab_result:
                             grab_result.Release()
 
+                    # Write frames to files
                     if self.recording:
                         if len(basler_frames) > 0:
                             self.out_basler_0.write(basler_frames[0])
@@ -141,15 +164,17 @@ class MotionCameraStream(CameraSetup):
                             self.out_basler_1.write(basler_frames[1])
                         self.out_rs.write(frame2)
 
+                    # Show live streams
                     for i, frame in enumerate(basler_frames):
                         cv2.imshow(f'Basler Camera {i+1}', frame)
                     cv2.imshow("RealSense Stream", frame2)
 
                     if cv2.waitKey(1) & 0xFF == ord('q'):
-                        print("User exited.")
+                        print("✋ User exited.")
                         self.running = False
                         break
 
+                # Prepare for next iteration
                 frame1, frame2 = frame2, self.get_realsense_frame()
 
         except KeyboardInterrupt:
