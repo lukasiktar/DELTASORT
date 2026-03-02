@@ -23,3 +23,14 @@
 11_record_video_on_movement_SSD.py - Start recording and storing videos on SSD, for each camera independently when movement is detected.
 
 12_record_video_on_movement_15_FPS_SSD.py Start recording and storing 15 FPS videos on SSD, for each camera independently when movement is detected.
+
+13_capture_sample.py  Capture samples from all three cameras with lighting.
+
+
+2 CAMERA SETUP - enabled trigger
+
+23_multiple_camera_stream.py - NIR and RGB camera stream with enabled trigger.
+
+23_01_multiple_camera_strea.py - NIR and RGB camera stream with enabled trigger with additional printing of camera settings for both of them.
+
+28_record_one_min_images.py - Record the trigger-based synchronized images (NIR and RGB) for each camera idependently.

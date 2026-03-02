@@ -1,0 +1,16 @@
+[Unit]
+Description=DELTASORT Recording Service
+After=network.target
+
+[Service]
+Type=simple
+User=deltasort1
+WorkingDirectory=/home/deltasort1/DELTASORT
+ExecStart=/usr/bin/python3 /home/deltasort1/DELTASORT/12_record_video_on_movement_15_FPS_SSD.py
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

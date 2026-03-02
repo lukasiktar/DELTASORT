@@ -3,3 +3,10 @@
 /combined_video.avi
 /realsense.avi
 /stress_test.txt
+__pycache__
+basler_samples
+images_basler_1
+images_basler_2
+.12_record_video_on_movement_15_FPS_SSD.py.swp
+.lamp_controller.py.swp
+12_record_video_on_movement_15_FPS_SSD.py~

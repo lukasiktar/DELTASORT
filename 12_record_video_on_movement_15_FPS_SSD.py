@@ -7,12 +7,13 @@ import os
 from src.config import MOTION_THRESHOLD, MIN_MOTION_TIME, NO_MOTION_TIME
 from src.motion_detection import detect_motion
 from src.camera_setup import CameraSetup
+from lamp_controller import GE483Controller
 
 SSD_PATH = "/media/deltasort1/ADATA SD620/camera_data_videos"
 os.makedirs(SSD_PATH, exist_ok=True)
 
 # Timeout for program exit
-TIMEOUT_SECONDS = 3600  # 1 hour
+TIMEOUT_SECONDS = 24*3600  # 24*1 hour
 
 class MotionCameraStream(CameraSetup):
 
@@ -25,6 +26,10 @@ class MotionCameraStream(CameraSetup):
         self.stream_active = False
         self.running = True
         self.timestamp = None
+        self.lamp_controller = GE483Controller(port='/dev/ttyUSB0')
+        self.lamp_controller.turn_off_all()
+        self.lamp_controller.turn_on_range(range(2, 13), 30)
+        time.sleep(0.5)
 
     # --------------------------- Camera Frames ---------------------------
 
@@ -62,7 +67,7 @@ class MotionCameraStream(CameraSetup):
             (self.width, self.height)
         )
         self.recording = True
-        print(f"📹 Recording started: {self.timestamp}")
+        print(f" Recording started: {self.timestamp}")
 
     def stop_recording(self):
         if self.recording:
@@ -76,6 +81,8 @@ class MotionCameraStream(CameraSetup):
 
     def cleanup(self):
         print("\nCleaning up resources...")
+        self.lamp_controller.set_led_intensity(1, 0)
+        self.lamp_controller.close()
         self.stop_recording()
         try:
             for cam in self.basler_cameras:
@@ -164,15 +171,15 @@ class MotionCameraStream(CameraSetup):
                             self.out_basler_1.write(basler_frames[1])
                         self.out_rs.write(frame2)
 
-                    # Show live streams
-                    for i, frame in enumerate(basler_frames):
-                        cv2.imshow(f'Basler Camera {i+1}', frame)
-                    cv2.imshow("RealSense Stream", frame2)
+                    ## Show live streams
+                    #for i, frame in enumerate(basler_frames):
+                        #cv2.imshow(f'Basler Camera {i+1}', frame)
+                    #cv2.imshow("RealSense Stream", frame2)
 
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        print("✋ User exited.")
-                        self.running = False
-                        break
+                    #if cv2.waitKey(1) & 0xFF == ord('q'):
+                        #print("User exited.")
+                        #self.running = False
+                        #break
 
                 # Prepare for next iteration
                 frame1, frame2 = frame2, self.get_realsense_frame()

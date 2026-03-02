@@ -12,7 +12,7 @@ SSD_PATH = "/media/deltasort1/ADATA SD620/camera_data_videos"
 os.makedirs(SSD_PATH, exist_ok=True)
 
 # >>> Added for timeout <<<
-TIMEOUT_SECONDS = 3600  # 1 hour timeout
+TIMEOUT_SECONDS = 990000  # 1 hour timeout
 
 class MotionCameraStream(CameraSetup):
 
