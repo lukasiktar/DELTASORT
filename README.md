@@ -34,3 +34,12 @@
 23_01_multiple_camera_strea.py - NIR and RGB camera stream with enabled trigger with additional printing of camera settings for both of them.
 
 28_record_one_min_images.py - Record the trigger-based synchronized images (NIR and RGB) for each camera idependently.
+
+29_01_record_images_with_ROI.py - Record trigger based aligned and synchronized images (NIR and RGB) using ROI.
+
+29_video_with_ROI.py - Record video with of aligned images (NIR and RGB) using ROI.
+
+30_real_object_detection.py - Final solution script - the script that reads the images from both cameras (NIR and RGB), aligns them and stores the images for all 4 images channels. The script uses the trained classification model to classify the PET and HDPE plastic materials.
+Comes with config files for homography definition, helper_script.py and plastic_classifier02.pkl classification model
+
+100_classification_model_training.py - Training classification script.

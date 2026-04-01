@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread("/home/istrazivac/LukaSiktar/DELTASORT/results/channel1_jet.png")
+img = cv2.imread("DELTASORT_image_processing/results/channel1_jet.png")
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)         
 

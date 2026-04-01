@@ -5,11 +5,11 @@ import os
 os.makedirs("results_03", exist_ok=True)
 
 image_paths = [
-    "/home/istrazivac/LukaSiktar/DELTASORT/basler_samples/basler2_channel0.png",
-    "/home/istrazivac/LukaSiktar/DELTASORT/basler_samples/basler2_channel1.png",
-    "/home/istrazivac/LukaSiktar/DELTASORT/basler_samples/basler2_channel2.png",
-    "/home/istrazivac/LukaSiktar/DELTASORT/basler_samples/basler2_channel3.png",
-    "/home/istrazivac/LukaSiktar/DELTASORT/basler_samples/basler2_channel4.png"]
+    "/home/deltasort1/DELTASORT/basler_samples/basler2_channel0.png",
+    "/home/deltasort1/DELTASORT/basler_samples/basler2_channel1.png",
+    "/home/deltasort1/DELTASORT/basler_samples/basler2_channel2.png",
+    "/home/deltasort1/DELTASORT/basler_samples/basler2_channel3.png",
+    "/home/deltasort1/DELTASORT/basler_samples/basler2_channel4.png"]
 
 imgs_norm=[]
 for i, path in enumerate(image_paths):
